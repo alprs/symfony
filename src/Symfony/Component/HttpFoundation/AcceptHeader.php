@@ -171,28 +171,28 @@ class AcceptHeader
     }
 
     /**
-     * Based on an array of content-types you provide, find the best match.
+     * Based on an array of items you provide, find the best match.
      *
-     * @param  string[] $types Content-types you can provide.
+     * @param  string[] $types "Accept-*" items you can provide.
      *
      * @return AcceptHeaderItem|null
      */
-    public function bestMatch(array $types)
+    public function bestMatch(array $items)
     {
         $this->sort();
 
         $bestMatch = null;
 
-        foreach ($types as $canProvideType) {
-            foreach ($this->items as $acceptType) {
+        foreach ($items as $canProvideItem) {
+            foreach ($this->items as $acceptItem) {
                 // check if the value in the accept header matches the type we
                 // can provide, and if the quality is greater than a potentially
                 // already found best match
                 if (
-                    $canProvideType == $acceptType->getValue() &&
-                    (null === $bestMatch || $acceptType->getQuality() > $bestMatch->getQuality())
+                    $canProvideItem == $acceptItem->getValue() &&
+                    (null === $bestMatch || $acceptItem->getQuality() > $bestMatch->getQuality())
                 ) {
-                    $bestMatch = $acceptType;
+                    $bestMatch = $acceptItem;
                 }
             }
         }
@@ -201,7 +201,7 @@ class AcceptHeader
             return $bestMatch;
         }
 
-        // assume that the first entry of types is the default
-        return !empty($types) ? reset($types) : null;
+        // assume that the first entry of items is the default
+        return !empty($items) ? AcceptHeaderItem::fromString(reset($items)) : null;
     }
 }
