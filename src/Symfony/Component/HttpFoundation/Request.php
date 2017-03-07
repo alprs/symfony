@@ -1690,7 +1690,7 @@ class Request
             return $this->charsets;
         }
 
-        return $this->charsets = array_keys(AcceptHeader::fromString($this->headers->get('Accept-Charset'))->all());
+        return $this->charsets = array_keys($this->getAcceptHeaders('Accept-Charset'));
     }
 
     /**
@@ -1704,7 +1704,7 @@ class Request
             return $this->encodings;
         }
 
-        return $this->encodings = array_keys(AcceptHeader::fromString($this->headers->get('Accept-Encoding'))->all());
+        return $this->encodings = array_keys($this->getAcceptHeaders('Accept-Encoding'));
     }
 
     /**
@@ -1718,7 +1718,19 @@ class Request
             return $this->acceptableContentTypes;
         }
 
-        return $this->acceptableContentTypes = array_keys(AcceptHeader::fromString($this->headers->get('Accept'))->all());
+        return $this->acceptableContentTypes = array_keys($this->getAcceptHeaders('Accept'));
+    }
+
+    /**
+     * Get an object representing an accept header.
+     *
+     * @param  string $header Which header to fetch. Defaults to "Accept".
+     *
+     * @return AcceptHeader
+     */
+    public function getAcceptHeaders($header = 'Accept')
+    {
+        return AcceptHeader::fromString($this->headers->get('Accept'))->all();
     }
 
     /**
