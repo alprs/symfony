@@ -100,4 +100,25 @@ class AcceptHeaderTest extends TestCase
             'order matters when q is equal2' => array('*;q=0.3,utf-8;q=0.7,ISO-8859-1;q=0.7',  array('utf-8', 'ISO-8859-1', '*')),
         );
     }
+
+    /**
+     * @dataProvider provideBestMatchData
+     */
+    public function testBestMatch($string, $bestMatch, $types)
+    {
+        $header = AcceptHeader::fromString($string);
+        $this->assertEquals($bestMatch, $header->bestMatch($types)->getValue());
+    }
+
+    public function provideBestMatchData()
+    {
+        return array(
+            'quality has priority' => array('text/plain;q=0.2,text/html;q=0.8', 'text/html', ['text/plain', 'text/html']),
+            'quality has priority over provided types' => array('text/plain;q=0.2,text/html;q=0.8', 'text/html', ['text/html', 'text/plain']),
+            'types order matter when quality is equal 1' => array('text/plain;q=0.5,text/html;q=0.5', 'text/html', ['text/html', 'text/plain']),
+            'types order matter when quality is equal 2' => array('text/plain;q=0.5,text/html;q=0.5', 'text/plain', ['text/plain', 'text/html']),
+            'types order matter when quality is equal 3' => array('text/plain,text/html', 'text/html', ['text/html', 'text/plain']),
+            'default if no match' => array('text/plain', 'text/plain', ['text/plain', 'application/json']),
+        );
+    }
 }
